@@ -13,11 +13,18 @@ const login = async(req,res) => {
         if(!user) {
             return res.status(httpStatus.NOT_FOUND).json({message: "User Not Found"});
         }
-        if(bcrypt.compare(password, user.password)){
-            let token = crypto.randomBytes();
+        console.log(user);
+        let isPasswordCorrect = await bcrypt.compare(password, user.password);
+        console.log(isPasswordCorrect)
+        if(isPasswordCorrect){
+            let token = crypto.randomBytes(10);
+            console.log(token);
             user.token = token;
             await user.save();
             return res.status(httpStatus.OK).json({token: token});
+        }
+        else{
+            return res.status(httpStatus.UNAUTHORIZED).json({message: "Invalide username or passward"});
         }
     }
     catch(e){

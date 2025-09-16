@@ -1,11 +1,18 @@
 import { Server } from "socket.io";
-
+import cors from "cors";
 let connections = {}
 let messages = {}
 let timeOnline = {}
 
 const connectToSocket = (server) => {
-    const io = new Server(server);
+    const io = new Server(server, {
+        cors: {
+            origin: "*",
+            methods: ["GET", "POST"],
+            allowedHeaders: ["*"],
+            credentials: true
+        }
+    });
     io.on("connection", (socket) => {
         socket.on("join-call", (path) => {
             if(connections[path] == undefined){
