@@ -14,17 +14,18 @@ const connectToSocket = (server) => {
         }
     });
     io.on("connection", (socket) => {
-        socket.on("join-call", (path) => {
+        console.log("Something connected");
+        socket.on("join-call", (path) => {//path is a room 
             if(connections[path] == undefined){
                 connections[path] = []
             }
-            connections[path].push(socket.id);
+            connections[path].push(socket.id);//har client ka apna socknet id hota hai
             timeOnline[socket.id] = new Date();
             
             for(let a = 0; a < connections[path].length; a++){
                 io.to(connections[path][a]).emit("user-joined", socket.id, connections[path]);
             }
-            if(messages[path] !== undefined){
+            if(messages[path] !== undefined){//naye join hue user ko purane message dikhne ke liye
                 for(let a = 0; a < messages[path].length; a++){
                     io.to(socket.id).emit("chat-message", messages[path][a]['data'],messages[path][a]['sender'], messages[path][a]['socket-id-sender']);
                 }
@@ -57,7 +58,7 @@ const connectToSocket = (server) => {
         });
         socket.on("disconnect",() => {
             var diffTime = Math.abs(timeOnline[socket.id] = new Date());
-            var key
+            var key;
             for(const [k,v] of JSON.parse(JSON.stringify(Object.entries(connections)))){
                 for(let a = 0; a < v.length; a++){
                     if(v[a] == socket.id){
