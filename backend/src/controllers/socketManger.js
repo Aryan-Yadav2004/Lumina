@@ -1,5 +1,4 @@
 import { Server } from "socket.io";
-import cors from "cors";
 let connections = {}
 let messages = {}
 let timeOnline = {}
@@ -16,7 +15,7 @@ const connectToSocket = (server) => {
     io.on("connection", (socket) => {
         console.log("Something connected");
         socket.on("join-call", (path) => {//path is a room 
-            if(connections[path] == undefined){
+            if(connections[path] === undefined){
                 connections[path] = []
             }
             connections[path].push(socket.id);//har client ka apna socknet id hota hai
@@ -44,12 +43,12 @@ const connectToSocket = (server) => {
 
                 return [room, isFound];
             },['',false]);
-            if(found == true){
-                if(messages[matchingRoom] == undefined){
+            if(found === true){
+                if(messages[matchingRoom] === undefined){
                     messages[matchingRoom] = []
                 }
                 messages[matchingRoom].push({'sender': sender, "data": data, "socket-id-sender": socket.id})
-                console.log("message", key, ":", sender, data);
+                console.log("message", matchingRoom, ":", sender, data);
 
                 connections[matchingRoom].forEach((elem)=>{
                     io.to(elem).emit("chat-message", data, sender, socket.id)
