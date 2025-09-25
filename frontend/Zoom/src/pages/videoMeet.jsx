@@ -14,6 +14,7 @@ import VideocamIcon from '@mui/icons-material/Videocam';
 import VideocamOffIcon from '@mui/icons-material/VideocamOff';
 import ChatIcon from '@mui/icons-material/Chat';
 import Badge from '@mui/material/Badge';
+import { useNavigate } from 'react-router-dom';
 const server_url = "http://localhost:8000";
 
 const connections = {};
@@ -26,6 +27,7 @@ const peerconfigConnnections = {
 
 function VideoMeet() {
 
+    let navigate = useNavigate();
     var socketRef = useRef();
 
     let socketIdRef = useRef();
@@ -215,8 +217,11 @@ function VideoMeet() {
       }
     }
     //TODO add Message
-    let addMessage = () => {
-
+    let addMessage = (data, sender, socketIdSender) => {
+      setMessages((prevMessages) => [...prevMessages,{sender: sender, data: data}]);
+      if(socketIdSender !== socketIdRef.current){
+        setNewMessages((prevMessages)=> prevMessages + 1);
+      }
     }
     let connectToSocketServer = () => {
       socketRef.current = io.connect(server_url,{secure: false});
@@ -372,6 +377,24 @@ function VideoMeet() {
     let handleScreen = () => {
       setScreen(!screen);
     }
+    let sendMessage = () => {
+      socketRef.current.emit("chat-message",message,username);
+      setMessage("");
+    }
+    let handleChat = () => {
+      setModal(!showModal);
+      setNewMessages(0);
+    }
+    let handleEndCall = () => {
+      try {
+        let tracks = localVideoRef.current.srcObject.getTracks();
+        tracks.forEach(track => track.stop());
+      }
+      catch(e){
+        console.log(e);
+      }
+      navigate("/home");
+    }
   return (
     <div>
         {askForUsername == true ?
@@ -392,7 +415,7 @@ function VideoMeet() {
             <IconButton style={{color: "white"}} onClick={handleAudio}>
               {(audio == true) ? <MicIcon />: <MicOffIcon />}
             </IconButton>
-            <IconButton style={{color: "red"}}>
+            <IconButton onClick={handleEndCall} style={{color: "red"}}>
               <CallEndIcon/>
             </IconButton>
             {screenAvailable? 
@@ -403,7 +426,7 @@ function VideoMeet() {
               <></>
             }
             <Badge badgeContent={newMessages} max={999} color='secondary'>
-              <IconButton onClick={()=>setModal(!showModal)} style={{color: "white"}}>
+              <IconButton onClick={handleChat} style={{color: "white"}}>
                 <ChatIcon/>
               </IconButton>
             </Badge>
@@ -414,10 +437,20 @@ function VideoMeet() {
               <div className="chatRoom">
                 <div className="chatContainer">
                   <h1>Chat</h1>
-                  <div className="chattingArea">
-                    <TextField id="outlined-basic" label="Enter your msg" variant="outlined" />
-                    <Button variant='contained' onClick={sendMessage}>Send</Button>
+                  <div className='chattingDisplay'>
+                    {messages.length > 0 ? messages.map((item,index)=>{
+                      return(
+                        <div key={index} style={{marginBottom: "20px"}}>
+                          <p style={{fontWeight:"bold"}}>{item.sender}</p>
+                          <p><i>{item.data}</i></p>
+                        </div>
+                      )
+                    }):<p>No messages yet!</p>}
                   </div>
+                  <div className="chattingArea">
+                    <TextField value={message} onChange={(e) => setMessage(e.target.value)} id="outlined-basic" label="Enter your msg" variant="outlined" />
+                    <Button variant='contained' onClick={sendMessage}>Send</Button>
+                  </div> 
                 </div>
               </div>
               :
