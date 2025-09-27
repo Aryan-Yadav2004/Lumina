@@ -19,6 +19,7 @@ const login = async(req,res) => {
         if(isPasswordCorrect){
             let token = crypto.randomBytes(10);
             console.log(token);
+            token = JSON.stringify(token);
             user.token = token;
             await user.save();
             return res.status(httpStatus.OK).json({token: token});
@@ -70,14 +71,18 @@ const getUserHistory = async (req, res)=>{
 }
 
 const addToHistory =  async(req,res) => {
+    console.log("got message to client");
     const {token, meeting_code} = req.body;
+    console.log(req.body);
     try{
         const user = await User.findOne({token:token});
+        console.log(user);
         const newMeeting = new Meeting({
             user_id: user.username,
             meetingCode: meeting_code
         })
-        await newMeeting.save();
+        const res = await newMeeting.save();
+        console.log(res);
         res.status(httpStatus.CREATED).json({message:"Added code to history"});
     }catch(e){
         res.json({message: `Something went wrong ${e}`});

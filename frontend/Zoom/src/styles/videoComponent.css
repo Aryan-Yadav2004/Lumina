@@ -50,8 +50,28 @@
 .chatContainer{
     position: relative;
     height: 100%;
+    overflow: scroll;
+    scrollbar-width: none;
 }
 .chattingArea{
     position: absolute;
     bottom: 0;
+    background-color: white;
+    display: flex;
+    gap: 7.5rem;
+    justify-content: space-between;
+}
+.MeetEntryPoint{
+    height: 100vh;
+    width: 100vw;
+    display: flex;
+    justify-content: space-between;
+}
+.MeetEntryPoint > div{
+    height: 100vh;
+    width: 50vw;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }

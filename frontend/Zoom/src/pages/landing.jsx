@@ -1,7 +1,9 @@
 import React from 'react'
-import {Link} from "react-router-dom"
-import  "../App.css"
+import {Link, useNavigate} from "react-router-dom"
+import  "../App.css";
+
 function Landing() {
+    const navigate = useNavigate();
   return (
     <div className="landingPageContainer">
       <nav>
@@ -9,10 +11,10 @@ function Landing() {
           <h2>Lumina</h2>
         </div>
         <div className="navlist">
-          <p>Join as Guest</p>
-          <p>Register</p>
-          <div role='button'>
-            <p>Login </p>
+          <p onClick={()=>{navigate("/aegaef")}}>Join as Guest</p>
+          <p onClick={()=>{navigate("/auth")}}>Register</p>
+          <div onClick={()=>{navigate("/auth")}} role='button'>
+            <p >Login </p>
           </div>
         </div>
       </nav>

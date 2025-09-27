@@ -378,6 +378,7 @@ function VideoMeet() {
       setScreen(!screen);
     }
     let sendMessage = () => {
+      if(message.trim() === "") return;
       socketRef.current.emit("chat-message",message,username);
       setMessage("");
     }
@@ -398,14 +399,18 @@ function VideoMeet() {
   return (
     <div>
         {askForUsername == true ?
-         <div>
-          <h2>Enter into the lobby</h2>
-          <TextField id='outlined-basic' label="Username" value={username} onChange={e => setUsername(e.target.value)} ></TextField>
-          <Button variant="contained" onClick={connect}>Connect</Button>
+        <div className='MeetEntryPoint'>
+          <div style={{position:"relative",background:"url(/logo2.svg)",backgroundRepeat:"no-repeat", objectFit:"contain",backgroundPosition:"center"}}>
+            <h2 style={{left:"0",top:"0",position:"absolute",backgroundColor:"white",paddingLeft:"3.8rem",paddingRight:"3.8rem",paddingTop:"1rem",paddingBottom:"1rem", borderRadius:"10px"}}>Enter into the lobby</h2>
+            <div style={{display:"flex", background:"white",borderRadius:"10px"}}>
+              <TextField id='outlined-basic' label="Username" value={username} onChange={e => setUsername(e.target.value)} ></TextField>
+              <Button variant="contained" onClick={connect}>Connect</Button>
+            </div>
+          </div>
           <div>
             <video ref={localVideoRef} autoPlay muted></video>
           </div>
-         </div> : 
+        </div> : 
          <div className='meetVideoContainer'>
 
           <div className="buttonContainer">
@@ -425,7 +430,7 @@ function VideoMeet() {
               :
               <></>
             }
-            <Badge badgeContent={newMessages} max={999} color='secondary'>
+            <Badge badgeContent={(showModal? 0:newMessages)} max={999} color='secondary'>
               <IconButton onClick={handleChat} style={{color: "white"}}>
                 <ChatIcon/>
               </IconButton>
@@ -440,16 +445,26 @@ function VideoMeet() {
                   <div className='chattingDisplay'>
                     {messages.length > 0 ? messages.map((item,index)=>{
                       return(
-                        <div key={index} style={{marginBottom: "20px"}}>
+                        (username === item.sender) ?
+                        <div key={index} style={{marginBottom: "20px", background:"#a2fcba", padding: "1rem", borderRadius: "1rem", textAlign: "right"}}>
+                          <p><i>{item.data}</i></p>
+                        </div>
+                        :
+                        <div key={index} style={{marginBottom: "20px", background:"#d7dbd8",padding: "1rem", borderRadius: "1rem"}}>
                           <p style={{fontWeight:"bold"}}>{item.sender}</p>
                           <p><i>{item.data}</i></p>
                         </div>
                       )
-                    }):<p>No messages yet!</p>}
+                    })
+                    :
+                    <p>No messages yet!</p>}
+                    <div style={{background:"transparent", height:"20px"}}>
+
+                    </div>
                   </div>
                   <div className="chattingArea">
-                    <TextField value={message} onChange={(e) => setMessage(e.target.value)} id="outlined-basic" label="Enter your msg" variant="outlined" />
-                    <Button variant='contained' onClick={sendMessage}>Send</Button>
+                    <TextField value={message} onChange={(e) => setMessage(e.target.value)} id="fullWidth" label="Enter your msg" variant="outlined" />
+                    <Button variant='contained'  onClick={sendMessage}>Send</Button>
                   </div> 
                 </div>
               </div>
