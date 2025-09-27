@@ -3,7 +3,6 @@ import "../styles/videoComponent.css"
 import TextField from '@mui/material/TextField';
 import io from "socket.io-client";
 import Button from '@mui/material/Button';
-import { connection } from 'mongoose';
 import IconButton from '@mui/material/IconButton';
 import MicIcon from '@mui/icons-material/Mic';
 import ScreenShareIcon from '@mui/icons-material/ScreenShare';
