@@ -15,7 +15,8 @@ import VideocamOffIcon from '@mui/icons-material/VideocamOff';
 import ChatIcon from '@mui/icons-material/Chat';
 import Badge from '@mui/material/Badge';
 import { useNavigate } from 'react-router-dom';
-const server_url = "http://localhost:8000";
+import server from '../enviroment';
+const server_url = server;
 
 const connections = {};
 
